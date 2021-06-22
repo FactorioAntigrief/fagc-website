@@ -1,0 +1,10 @@
+.searchBarName {
+}
+.searchbarPlaceholder {
+    margin-left: 25px;
+    text-decoration: none;
+}
+input {
+    border-style: hidden;
+    border-bottom-style:solid;
+}

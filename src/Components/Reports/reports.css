@@ -1,0 +1,9 @@
+.Report {
+    border: solid 1px;
+    border-color: #bab4a7;
+    color: #e8e4dc;
+}
+a:link, a:visited, a:hover, a:active {
+    text-decoration: underline cyan;
+    color: cyan;
+}
