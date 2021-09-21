@@ -1,24 +1,17 @@
 import React from "react"
-import logo from "./logo.svg"
 import "./App.css"
+import {Grid} from "@mui/material"
 
-function App() {
+import ReportComponent from "./Components/Report/report"
+import CommunityProfile from "./Components/Profile/communityprofile"
+
+function App(): JSX.Element {
 	return (
 		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.tsx</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-			</header>
+			<Grid container spacing={2} direction="column" alignItems="center">
+			{/* <ReportComponent id={"PmwQAVC"} /> */}
+			<CommunityProfile playername="Windsinger" communityId="p1UgG0G" />
+			</Grid>
 		</div>
 	)
 }
