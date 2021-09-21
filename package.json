@@ -1,58 +1,18 @@
 {
   "name": "fagc-website",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.11.4",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.23",
-    "@types/node": "^12.20.15",
-    "@types/react": "^17.0.11",
-    "@types/react-dom": "^17.0.8",
-    "axios": "^0.21.1",
-    "bson-objectid": "^2.0.1",
-    "fagc-api-wrapper": "^1.7.1",
-    "history": "^5.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2"
-  },
+  "version": "1.0.0",
+  "description": "",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint src/ --fix"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FactorioAntigrief/fagc-website.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "author": "oof2win2",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FactorioAntigrief/fagc-website/issues"
   },
-  "devDependencies": {
-    "@types/react-router": "^5.1.15",
-    "@types/react-router-dom": "^5.1.7",
-    "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.0",
-    "eslint": "^7.29.0",
-    "typescript": "^4.3.4"
-  }
+  "homepage": "https://github.com/FactorioAntigrief/fagc-website#readme"
 }
