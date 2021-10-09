@@ -4,10 +4,16 @@ import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "./FAGC"
+import { ThemeProvider } from "@mui/material"
+import { themeDark } from "./Other/themes/themeDark"
+import ScrollToTopComponent from "./Components/ScrollToTop/ScrollToTop"
 
 ReactDOM.render(
 	<React.StrictMode>
+		{/* <ThemeProvider theme={themeDark}> */}
 		<App />
+		{/* </ThemeProvider> */}
+		<ScrollToTopComponent />
 	</React.StrictMode>,
 	document.getElementById("root")
 )

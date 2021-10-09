@@ -1,6 +1,6 @@
 import { Report } from 'fagc-api-types'
 import React, { useEffect, useState } from 'react'
-import {Grid, Paper} from "@mui/material/"
+import {Grid, Paper, Skeleton} from "@mui/material/"
 import { FAGC } from '../../FAGC'
 
 
@@ -23,30 +23,28 @@ const ReportComponent: React.FC<ReportProps> = ({id, withProfileData=true}: Repo
 			}
 			setLoading(false)
 		})()
-	})
+	}, [])
 
-	if (report) {
-		const rule = FAGC.rules.resolveID(report.brokenRule)
-		const community = FAGC.communities.resolveID(report.communityId)
+	if ((report && !loading) || (loading && !report)) {
+		if (loading) console.log(report)
+		if (!loading) console.log(report)
+		const rule = FAGC.rules.resolveID(report?.brokenRule || "")
+		const community = FAGC.communities.resolveID(report?.communityId || "")
+		const skeleton = (width?: string|number) => <Skeleton style={{display: "inline-block"}} width={width??"4em"} />
 		return (
-			<Grid item xs="auto">
+			// <Grid item xs="auto">
 				<Paper style={{margin: -16, padding: 16}}>
 				<p>Report ID: {id}</p>
-				{withProfileData && <p>Playername: {report.playername}</p>}
-				<p>Broken rule: {`${rule?.shortdesc} (${rule?.id})`}</p>
-				<p>Description: {report.description}</p>
-				<p>Admin: {report.adminId}</p>
-				{withProfileData && <p>Community: {`${community?.name} (${community?.id})`}</p>}
-				<p>Proof: {report.proof}</p>
+				{withProfileData && <p>Playername: {loading ? skeleton("6em") : report?.playername}</p>}
+				<p>Broken rule: {loading ? skeleton("6em") : `${rule?.shortdesc} (${rule?.id})`}</p>
+				<p>Description: {loading ? skeleton("4em") : report?.description}</p>
+				<p>Admin ID: {loading ? skeleton("8em") : report?.adminId}</p>
+				{withProfileData && <p>Community: {loading ? skeleton("6em") :`${community?.name} (${community?.id})`}</p>}
+				<p>Proof: {loading ? skeleton("4em") : report?.proof}</p>
 				</Paper>
-			</Grid>
+			// </Grid>
 		)
 	}
-	if (loading) return (
-		<Grid item xs="auto">
-			<p>Loading...</p>
-		</Grid>
-	)
 	return (
 		<div>An error occured</div>
 	)

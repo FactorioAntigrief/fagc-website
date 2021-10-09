@@ -1,9 +1,8 @@
 import { Profile } from 'fagc-api-types'
 import React, { useEffect, useState } from 'react'
-import {Grid, Paper} from "@mui/material/"
+import {Grid, Paper, Skeleton} from "@mui/material/"
 import { FAGC } from '../../FAGC'
-import ReportComponent from '../Report/report'
-
+import HiddenReportComponent from "../Report/hiddenReport"
 
 interface CommunityProfileProps {
 	playername: string
@@ -13,6 +12,7 @@ interface CommunityProfileProps {
 const CommunityProfile: React.FC<CommunityProfileProps> = ({playername, communityId}: CommunityProfileProps) => {
 	const [profile, setProfile] = useState<Profile|null>(null)
 	const [loading, setLoading] = useState(true)
+	const [limit, setLimit] = useState(25)
 
 	useEffect(() => {
 		(async () => {
@@ -23,17 +23,18 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({playername, communit
 			}
 			setLoading(false)
 		})()
-	})
+	}, [])
 
-	if (profile) {
-		const community = FAGC.communities.resolveID(profile.communityId)
+	const skeleton = (width?: string|number) => <Skeleton style={{display: "inline-block"}} width={width??"4em"} />
+	if ((profile && !loading) || (!profile && loading)) {
+		const community = FAGC.communities.resolveID(profile?.communityId || "")
 		return (
 			<Grid item xs="auto">
-				<Paper style={{margin: -16, padding: 16}}>
-					<p>Playername: {profile.playername}</p>
-					<p>Community: {`${community?.name} (${community?.id})`}</p>
+				<Paper style={{margin: -16, padding: 16}} elevation={8}>
+					<p>Playername: {loading ? skeleton() : profile?.playername}</p>
+					<p>Community: {loading ? skeleton("6em") : `${community?.name} (${community?.id})`}</p>
 					{/* re-fetching the report wont matter here since the reports are cached */}
-					{profile.reports.map((profile, i) => <ReportComponent id={profile.id} key={i} /> )}
+					{profile && profile.reports && profile.reports.map((profile, i) => i < limit && <HiddenReportComponent id={profile.id} key={i} /> )}
 				</Paper>
 			</Grid>
 		)
