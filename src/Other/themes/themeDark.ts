@@ -23,7 +23,7 @@ export const themeDark = createTheme({
 		},
 	},
 	typography: {
-		fontFamily: ["--apple-system", "Roboto", "Open Sans"].join(","),
+		fontFamily: ["Roboto", "Open Sans"].join(","),
 		fontSize: 16,
 	},
 })
