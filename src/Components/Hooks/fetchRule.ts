@@ -2,28 +2,31 @@ import { useEffect, useState } from "react"
 import { Rule } from "fagc-api-types"
 import { FAGC } from "../../FAGC"
 
-const useFetchRule = (): [
+/**
+ * Returns some data and a function with which a fetch can be called for a specific rule ID
+ */
+export const useFetchRuleId = (): [
 	{ loading: boolean; rule: Rule | null; error: Error | null },
 	(id: string) => void
 ] => {
 	const [ruleId, setRuleId] = useState<string | null>(null)
-	const [rule, setCommunity] = useState<Rule | null>(null)
+	const [rule, setRule] = useState<Rule | null>(null)
 	const [error, setError] = useState<Error | null>(null)
 	const [loading, setLoading] = useState(false)
 
 	useEffect(() => {
 		if (!ruleId) {
 			setLoading(false), setError(null)
-			setCommunity(null)
+			setRule(null)
 			return
 		}
 		const fetchReport = async () => {
 			setLoading(true)
 			setError(null)
-			setCommunity(null)
+			setRule(null)
 			try {
 				const rule = await FAGC.rules.fetchRule(ruleId)
-				setCommunity(rule)
+				setRule(rule)
 				setLoading(false)
 			} catch (error) {
 				setError(error as Error)
@@ -36,4 +39,36 @@ const useFetchRule = (): [
 
 	return [{ loading, rule, error }, setRuleId]
 }
-export default useFetchRule
+
+/**
+ * Returns some data and a function with which a fetch can be called
+ */
+export const useFetchRules = (): [
+	{ loading: boolean; rules: Rule[]; error: Error | null },
+	() => void
+] => {
+	const [rules, setRules] = useState<Rule[]>([])
+	const [error, setError] = useState<Error | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [shouldFetch, setShouldFetch] = useState(false)
+
+	useEffect(() => {
+		const fetchRules = async () => {
+			setLoading(true)
+			setError(null)
+			setRules([])
+			try {
+				const rules = await FAGC.rules.fetchAll()
+				setRules(rules)
+				setLoading(false)
+			} catch (error) {
+				setError(error as Error)
+				setLoading(false)
+			}
+			return
+		}
+		fetchRules()
+	}, [shouldFetch])
+
+	return [{ loading, rules, error }, () => setShouldFetch(!shouldFetch)]
+}

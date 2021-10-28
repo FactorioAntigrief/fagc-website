@@ -12,24 +12,21 @@ import {
 } from "@mui/material"
 import InfoTwoToneIcon from "@mui/icons-material/InfoTwoTone"
 import { useStyles } from "../../Other/themes/styles"
-import useFetchReport from "../Hooks/fetchReport"
 import useFetchCommunity from "../Hooks/fetchCommunity"
-import useFetchRule from "../Hooks/fetchRule"
+import { useFetchRuleId } from "../Hooks/fetchRule"
 
 interface ReportTableProps {
 	reports: Report[]
-	withProfileData?: boolean
 }
 
 const ReportTable: React.FC<ReportTableProps> = ({
 	reports,
-	withProfileData = true,
 }: ReportTableProps) => {
 	const [detailedOpened, setDetailedOpened] = useState(false)
 	const [report, setReport] = useState<Report | null>(null)
 	const [{ community, loading: loadingCommunity }, setCommunity] =
 		useFetchCommunity()
-	const [{ rule, loading: loadingRule }, setRule] = useFetchRule()
+	const [{ rule, loading: loadingRule }, setRule] = useFetchRuleId()
 	const styles = useStyles()
 
 	const displayDetailedReport = (id: string) => {

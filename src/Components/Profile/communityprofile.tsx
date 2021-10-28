@@ -4,6 +4,7 @@ import { Grid, Paper, Skeleton, Typography } from "@mui/material/"
 import { FAGC } from "../../FAGC"
 import ReportTable from "../Tables/ReportTable"
 import { useStyles } from "../../Other/themes/styles"
+import useFetchCommunityProfile from "../Hooks/fetchProfile"
 
 interface CommunityProfileProps {
 	playername: string
@@ -14,7 +15,10 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 	playername,
 	communityId,
 }: CommunityProfileProps) => {
-	const [profile, setProfile] = useState<Profile | null>(null)
+	// TODO: complete this page
+	// TODO: create a hook for fetching multiple rules + communities
+	const [{ loading: profileLoading }, setProfileData] =
+		useFetchCommunityProfile()
 	const [loading, setLoading] = useState(true)
 	const styles = useStyles()
 
