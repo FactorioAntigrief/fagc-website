@@ -2,7 +2,8 @@ import { Profile } from "fagc-api-types"
 import React, { useEffect, useState } from "react"
 import { Grid, Paper, Skeleton, Typography } from "@mui/material/"
 import { FAGC } from "../../FAGC"
-import ReportTable from "../ReportTable/ReportTable"
+import ReportTable from "../Tables/ReportTable"
+import { useStyles } from "../../Other/themes/styles"
 
 interface CommunityProfileProps {
 	playername: string
@@ -15,7 +16,7 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 }: CommunityProfileProps) => {
 	const [profile, setProfile] = useState<Profile | null>(null)
 	const [loading, setLoading] = useState(true)
-	const [limit, setLimit] = useState(25)
+	const styles = useStyles()
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -49,17 +50,16 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 				elevation={1}
 			>
 				{/* TODO: get this to be white text */}
-				<Typography variant="h2">
+				<Typography variant="h2" className={styles.p}>
 					Playername: {loading ? skeleton() : profile?.playername}
 				</Typography>
-				<Typography variant="h2">
+				<Typography variant="h3" className={styles.p}>
 					Community:{" "}
 					{loading
 						? skeleton("6em")
 						: `${community?.name} (${community?.id})`}
 				</Typography>
-				{/* re-fetching the report wont matter here since the reports are cached */}
-				{/* {profile && profile.reports && profile.reports.map((profile, i) => i < limit && <HiddenReportComponent id={profile.id} key={i} /> )} */}
+
 				{profile && profile.reports && (
 					<div
 						style={{

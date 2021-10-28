@@ -7,13 +7,13 @@ export const themeDark = createTheme({
 			main: "#1e88e5",
 			light: "#6ab7ff",
 			dark: "#005cb2",
-			contrastText: "#ffffff",
+			// contrastText: "#ffffff",
 		},
 		secondary: {
 			main: "#7b1fa2",
 			light: "#ae52d4",
 			dark: "#4a0072",
-			contrastText: "#ffffff",
+			// contrastText: "#ffffff",
 		},
 		background: {
 			default: "#182528",
