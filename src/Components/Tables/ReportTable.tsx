@@ -14,6 +14,7 @@ import InfoTwoToneIcon from "@mui/icons-material/InfoTwoTone"
 import { useStyles } from "../../Other/themes/styles"
 import useFetchCommunity from "../Hooks/fetchCommunity"
 import { useFetchRuleId } from "../Hooks/fetchRule"
+import ReportComponent from "../Report/report"
 
 interface ReportTableProps {
 	reports: Report[]
@@ -100,69 +101,8 @@ const ReportTable: React.FC<ReportTableProps> = ({
 
 	const DetailedReportDialog = (
 		<Dialog open={detailedOpened} onClose={() => setDetailedOpened(false)}>
-			<DialogTitle>Report with ID {report?.id}</DialogTitle>
 			<DialogContent>
-				<DialogContentText>
-					Playername: {report?.playername}
-				</DialogContentText>
-				<Divider light />
-				<DialogContentText>
-					Broken rule ID: {report?.brokenRule}
-				</DialogContentText>
-				<DialogContentText>
-					Broken Rule short description:{" "}
-					{!loadingRule && rule ? (
-						rule.shortdesc
-					) : (
-						<Skeleton
-							style={{ display: "inline-block" }}
-							width="16em"
-						/>
-					)}
-				</DialogContentText>
-				<DialogContentText>
-					Broken Rule long description:{" "}
-					{!loadingRule && rule ? (
-						rule.longdesc
-					) : (
-						<>
-							<Skeleton
-								style={{ display: "inline-block" }}
-								width="17em"
-							/>
-							<Skeleton
-								style={{ display: "inline-block" }}
-								width="30em"
-							/>
-						</>
-					)}
-				</DialogContentText>
-				<Divider light />
-				<DialogContentText>
-					Community ID: {report?.communityId}
-				</DialogContentText>
-				<DialogContentText>
-					Community name:{" "}
-					{!loadingCommunity && community ? (
-						community?.name
-					) : (
-						<Skeleton
-							style={{ display: "inline-block" }}
-							width="20em"
-						/>
-					)}
-				</DialogContentText>
-				<DialogContentText>
-					Community contact:{" "}
-					{!loadingCommunity && community ? (
-						community?.contact
-					) : (
-						<Skeleton
-							style={{ display: "inline-block" }}
-							width="19em"
-						/>
-					)}
-				</DialogContentText>
+				{report && <ReportComponent id={report.id} />}
 			</DialogContent>
 		</Dialog>
 	)
@@ -176,7 +116,6 @@ const ReportTable: React.FC<ReportTableProps> = ({
 					// TODO: fix footer colors to not let them be white
 					rowCount: styles.columnHeader,
 				}}
-				// onRowClick={displayDetailedReport}
 			/>
 			{DetailedReportDialog}
 		</>
