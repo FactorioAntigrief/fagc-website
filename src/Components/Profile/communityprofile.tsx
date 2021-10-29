@@ -1,10 +1,9 @@
-import { Profile } from "fagc-api-types"
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { Grid, Paper, Skeleton, Typography } from "@mui/material/"
-import { FAGC } from "../../FAGC"
 import ReportTable from "../Tables/ReportTable"
 import { useStyles } from "../../Other/themes/styles"
 import useFetchCommunityProfile from "../Hooks/fetchProfile"
+import useFetchCommunity from "../Hooks/fetchCommunity"
 
 interface CommunityProfileProps {
 	playername: string
@@ -15,35 +14,22 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 	playername,
 	communityId,
 }: CommunityProfileProps) => {
-	// TODO: complete this page
-	// TODO: create a hook for fetching multiple rules + communities
-	const [{ loading: profileLoading }, setProfileData] =
+	const [{ loading: profileLoading, profile }, setProfileData] =
 		useFetchCommunityProfile()
-	const [loading, setLoading] = useState(true)
+	const [{ loading: communityLoading, community }, setCommunity] =
+		useFetchCommunity()
 	const styles = useStyles()
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const r = await FAGC.profiles.fetchCommunity(
-				playername,
-				communityId
-			)
-			setProfile(r)
-			if (r) {
-				await FAGC.communities.fetchCommunity(r.communityId)
-			}
-			setLoading(false)
-		}
-		fetchData()
-	}, [])
+		setProfileData(playername, communityId)
+		setCommunity(communityId)
+	}, [playername, communityId])
 
 	const skeleton = (width?: string | number) => (
 		<Skeleton style={{ display: "inline-block" }} width={width ?? "4em"} />
 	)
-	if ((profile && !loading) || (!profile && loading)) {
-		const community = FAGC.communities.resolveID(profile?.communityId || "")
-		return (
-			// <Grid item xs="auto">
+	return (
+		<Grid item xs="auto">
 			<Paper
 				style={{
 					margin: 16,
@@ -53,39 +39,38 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 				}}
 				elevation={1}
 			>
-				{/* TODO: get this to be white text */}
 				<Typography variant="h2" className={styles.p}>
-					Playername: {loading ? skeleton() : profile?.playername}
+					Playername: {playername}
 				</Typography>
 				<Typography variant="h3" className={styles.p}>
 					Community:{" "}
-					{loading
-						? skeleton("6em")
-						: `${community?.name} (${community?.id})`}
+					{communityLoading || !community ? (
+						<Skeleton width={"12rem"} />
+					) : (
+						community.name
+					)}
 				</Typography>
 
-				{profile && profile.reports && (
-					<div
-						style={{
-							height: 384,
-							width: 768,
-							marginLeft: "auto",
-							marginRight: "auto",
-						}}
-					>
-						<ReportTable reports={profile.reports} />
-					</div>
-				)}
+				<div
+					style={{
+						height: 384,
+						width: 768,
+						marginLeft: "auto",
+						marginRight: "auto",
+					}}
+				>
+					<ReportTable reports={profile ? profile.reports : []} />
+				</div>
 			</Paper>
-			// </Grid>
-		)
-	}
-	if (loading)
-		return (
-			<Grid item xs="auto">
-				<p>Loading...</p>
-			</Grid>
-		)
-	return <div>An error occured</div>
+		</Grid>
+	)
+	// }
+	// if (profileLoading)
+	// 	return (
+	// 		<Grid item xs="auto">
+	// 			<p>Loading...</p>
+	// 		</Grid>
+	// 	)
+	// return <div>An error occured</div>
 }
 export default CommunityProfile
