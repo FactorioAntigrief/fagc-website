@@ -1,23 +1,48 @@
 import React, { useState } from "react"
 import { Report } from "fagc-api-types"
-import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid"
 import {
-	Skeleton,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogContentText,
-	Divider,
-	IconButton,
-} from "@mui/material"
-import InfoTwoToneIcon from "@mui/icons-material/InfoTwoTone"
+	DataGrid,
+	GridColDef,
+	GridRowModel,
+	useGridApiContext,
+	useGridState,
+} from "@mui/x-data-grid"
+import { Dialog, DialogContent, IconButton, Pagination } from "@mui/material"
+import { InfoTwoTone } from "@mui/icons-material"
 import { useStyles } from "../../Other/themes/styles"
 import useFetchCommunity from "../Hooks/fetchCommunity"
 import { useFetchRuleId } from "../Hooks/fetchRule"
 import ReportComponent from "../Report/report"
+import { themeDark } from "../../Other/themes/themeDark"
 
 interface ReportTableProps {
 	reports: Report[]
+}
+
+const CustomPagination = () => {
+	const apiRef = useGridApiContext()
+	const [state] = useGridState(apiRef)
+	const styles = useStyles()
+
+	return (
+		<Pagination
+			sx={{
+				"& .MuiPaginationItem-root": {
+					color: "#ddd9d9",
+					// backgroundColor: "tomato",
+				},
+				"& .MuiButtonBase-root": {
+					backgroundColor: "#24242494",
+				},
+			}}
+			// color={"primary"}
+			className={styles.pmono}
+			count={state.pagination.pageCount}
+			page={state.pagination.page + 1}
+			variant="outlined"
+			onChange={(event, value) => apiRef.current.setPage(value - 1)}
+		/>
+	)
 }
 
 const ReportTable: React.FC<ReportTableProps> = ({
@@ -58,7 +83,11 @@ const ReportTable: React.FC<ReportTableProps> = ({
 				<IconButton
 					onClick={() => displayDetailedReport(params.row.id)}
 				>
-					<InfoTwoToneIcon />
+					<InfoTwoTone
+						style={{
+							color: "#ddd9d9",
+						}}
+					/>
 				</IconButton>
 			),
 			width: 50,
@@ -67,35 +96,41 @@ const ReportTable: React.FC<ReportTableProps> = ({
 			resizable: false,
 			disableColumnMenu: true,
 			align: "left",
+			headerClassName: styles.p,
 		},
 		{
 			field: "col1",
 			headerName: "ID",
 			cellClassName: styles.pmono,
+			headerClassName: styles.p,
 		},
 		{
 			field: "col2",
 			headerName: "Playername",
 			width: 144,
 			cellClassName: styles.p,
+			headerClassName: styles.p,
 		},
 		{
 			field: "col3",
 			headerName: "Broken rule",
 			width: 120,
 			cellClassName: styles.pmono,
+			headerClassName: styles.p,
 		},
 		{
 			field: "col4",
 			headerName: "Community ID",
 			width: 128,
 			cellClassName: styles.pmono,
+			headerClassName: styles.p,
 		},
 		{
 			field: "col5",
 			headerName: "Admin ID",
 			width: 196,
 			cellClassName: styles.pmono,
+			headerClassName: styles.p,
 		},
 	]
 
@@ -114,8 +149,13 @@ const ReportTable: React.FC<ReportTableProps> = ({
 				columns={columns}
 				classes={{
 					// TODO: fix footer colors to not let them be white
-					rowCount: styles.columnHeader,
+					selectedRowCount: styles.p,
+					rowCount: styles.p,
 				}}
+				components={{
+					Pagination: CustomPagination,
+				}}
+				pageSize={10}
 			/>
 			{DetailedReportDialog}
 		</>
