@@ -2,7 +2,7 @@ import React from "react"
 import "./App.css"
 import { Grid } from "@mui/material"
 
-import ReportComponent from "./Components/Report/report"
+import ReportComponent from "./Components/FAGCBase/report"
 import CommunityProfile from "./Pages/CommunityProfile/CommunityProfile"
 
 function App(): JSX.Element {

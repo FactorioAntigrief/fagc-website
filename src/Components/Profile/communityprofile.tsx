@@ -14,15 +14,11 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 	playername,
 	communityId,
 }: CommunityProfileProps) => {
-	const [{ loading: profileLoading, profile: profiles }, setProfileData] =
+	const [{ loading: profileLoading, profiles }, setProfileData] =
 		useFetchCommunityProfile()
-	const [{ loading: communityLoading, community }, setCommunity] =
-		useFetchCommunity()
-	const styles = useStyles()
 
 	useEffect(() => {
 		if (playername) setProfileData(playername, communityId)
-		if (communityId) setCommunity(communityId)
 	}, [playername, communityId])
 
 	const reports = profiles.map((profile) => profile.reports).flat()
@@ -38,7 +34,7 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 				}}
 				elevation={2}
 			>
-				{playername ? (
+				{/* {playername ? (
 					<Typography variant="h2" className={styles.p}>
 						Playername: {playername}
 					</Typography>
@@ -47,7 +43,6 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 						No playername provided
 					</Typography>
 				)}
-				{/* this depends on communityId because it isnt there if there are multiple communities */}
 				{communityId ? (
 					<Typography variant="h3" className={styles.p}>
 						Community:{" "}
@@ -66,18 +61,17 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 					<Typography variant="h3" className={styles.p}>
 						No community specified
 					</Typography>
-				)}
+				)} */}
 
-				<div
+				{/* <div
 					style={{
 						height: 384,
 						width: 768,
-						marginLeft: "auto",
-						marginRight: "auto",
+						// marginLeft: "auto",
+						// marginRight: "auto",
 					}}
-				>
-					<ReportTable reports={reports} />
-				</div>
+				> */}
+				<ReportTable reports={reports} />
 			</Paper>
 		</Grid>
 	)

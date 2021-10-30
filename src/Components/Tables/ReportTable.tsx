@@ -12,7 +12,7 @@ import { InfoTwoTone } from "@mui/icons-material"
 import { useStyles } from "../../Other/themes/styles"
 import useFetchCommunity from "../Hooks/fetchCommunity"
 import { useFetchRuleId } from "../Hooks/fetchRule"
-import ReportComponent from "../Report/report"
+import ReportComponent from "../FAGCBase/report"
 import { themeDark } from "../../Other/themes/themeDark"
 
 interface ReportTableProps {
@@ -143,12 +143,16 @@ const ReportTable: React.FC<ReportTableProps> = ({
 	)
 
 	return (
-		<>
+		<div
+			style={{
+				height: 384,
+				width: 768,
+			}}
+		>
 			<DataGrid
 				rows={rows}
 				columns={columns}
 				classes={{
-					// TODO: fix footer colors to not let them be white
 					selectedRowCount: styles.p,
 					rowCount: styles.p,
 				}}
@@ -158,7 +162,7 @@ const ReportTable: React.FC<ReportTableProps> = ({
 				pageSize={10}
 			/>
 			{DetailedReportDialog}
-		</>
+		</div>
 	)
 }
 export default ReportTable

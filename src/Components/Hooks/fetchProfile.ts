@@ -3,14 +3,14 @@ import { Profile } from "fagc-api-types"
 import { FAGC } from "../../FAGC"
 
 const useFetchCommunityProfile = (): [
-	{ loading: boolean; profile: Profile[]; error: Error | null },
+	{ loading: boolean; profiles: Profile[]; error: Error | null },
 	(playername: string, communityId?: string) => void
 ] => {
 	const [playername, setPlayername] = useState<string | null>(null)
 	const [communityId, setCommunityId] = useState<string | undefined>(
 		undefined
 	)
-	const [profile, setProfile] = useState<Profile[]>([])
+	const [profiles, setProfile] = useState<Profile[]>([])
 	const [error, setError] = useState<Error | null>(null)
 	const [loading, setLoading] = useState(false)
 
@@ -38,7 +38,7 @@ const useFetchCommunityProfile = (): [
 	}, [playername, communityId])
 
 	return [
-		{ loading, profile, error },
+		{ loading, profiles, error },
 		(playername: string, communityId?: string) => {
 			setPlayername(playername)
 			setCommunityId(communityId)

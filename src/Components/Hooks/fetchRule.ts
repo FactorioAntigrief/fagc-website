@@ -43,7 +43,7 @@ export const useFetchRuleId = (): [
 /**
  * Returns some data and a function with which a fetch can be called
  */
-export const useFetchRules = (): [
+export const useAllFetchRules = (): [
 	{ loading: boolean; rules: Rule[]; error: Error | null },
 	() => void
 ] => {
@@ -71,4 +71,39 @@ export const useFetchRules = (): [
 	}, [shouldFetch])
 
 	return [{ loading, rules, error }, () => setShouldFetch(!shouldFetch)]
+}
+
+export const useFetchRulesId = (): [
+	{ loading: boolean; rules: Rule[]; error: Error | null },
+	(ruleIDs: string[]) => void
+] => {
+	const [rules, setRules] = useState<Rule[]>([])
+	const [error, setError] = useState<Error | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [ruleIDs, setRuleIDs] = useState<string[]>([])
+
+	useEffect(() => {
+		const fetchRules = async () => {
+			setLoading(true)
+			setError(null)
+			setRules([])
+			try {
+				const rules = await Promise.all(
+					ruleIDs.map((id) => FAGC.rules.fetchRule(id))
+				).then((rules) => rules.filter((r) => r !== null) as Rule[])
+				setRules(rules)
+				setLoading(false)
+			} catch (error) {
+				setError(error as Error)
+				setLoading(false)
+			}
+			return
+		}
+		fetchRules()
+	}, [ruleIDs])
+
+	return [
+		{ loading, rules, error },
+		(ruleIDs: string[]) => setRuleIDs(ruleIDs),
+	]
 }

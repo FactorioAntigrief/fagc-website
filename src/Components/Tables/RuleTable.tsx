@@ -1,35 +1,67 @@
-import { Report, Community, Rule, CommunityConfig } from "fagc-api-types"
-import React, { useEffect, useState } from "react"
+import { Report, Community, Rule } from "fagc-api-types"
+import React, { useState } from "react"
 import {
 	DataGrid,
 	GridColDef,
 	GridRowParams,
 	GridRowModel,
+	useGridApiContext,
+	useGridState,
 } from "@mui/x-data-grid"
 import {
-	Skeleton,
 	Dialog,
 	DialogTitle,
 	DialogContent,
-	DialogContentText,
-	Divider,
+	Pagination,
 	IconButton,
 } from "@mui/material"
-import InfoTwoToneIcon from "@mui/icons-material/InfoTwoTone"
+import { InfoTwoTone } from "@mui/icons-material"
 import { useStyles } from "../../Other/themes/styles"
+import RuleComponent from "../FAGCBase/rule"
 
 interface RuleTableProps {
-	rules: Rule[]
+	rules: (Rule & {
+		reportCount?: number
+	})[]
+	showReportCount?: boolean
 }
 
-const RuleTable: React.FC<RuleTableProps> = ({ rules }: RuleTableProps) => {
-	const [detailedOpened, setDetailedOpened] = useState(false)
-	const [detailedRule, setDetailedRule] = useState<Rule | null>(null)
-
+const CustomPagination = () => {
+	const apiRef = useGridApiContext()
+	const [state] = useGridState(apiRef)
 	const styles = useStyles()
 
-	const displayDetailedRule = (params: GridRowParams) => {
-		const rule = rules.find((rule) => rule.id === params.row.id)
+	return (
+		<Pagination
+			sx={{
+				"& .MuiPaginationItem-root": {
+					color: "#ddd9d9",
+					// backgroundColor: "tomato",
+				},
+				"& .MuiButtonBase-root": {
+					backgroundColor: "#223f4cc9",
+				},
+			}}
+			// color={"primary"}
+			className={styles.pmono}
+			count={state.pagination.pageCount}
+			page={state.pagination.page + 1}
+			variant="outlined"
+			onChange={(event, value) => apiRef.current.setPage(value - 1)}
+		/>
+	)
+}
+
+const RuleTable: React.FC<RuleTableProps> = ({
+	rules,
+	showReportCount = false,
+}) => {
+	const [detailedOpened, setDetailedOpened] = useState(false)
+	const [detailedRule, setDetailedRule] = useState<Rule | null>(null)
+	const styles = useStyles()
+
+	const displayDetailedRule = (params: string) => {
+		const rule = rules.find((rule) => rule.id === params)
 		if (!rule) return
 		setDetailedRule(rule)
 		setDetailedOpened(true)
@@ -40,6 +72,7 @@ const RuleTable: React.FC<RuleTableProps> = ({ rules }: RuleTableProps) => {
 			id: rule.id,
 			col1: rule.id,
 			col2: rule.shortdesc,
+			col3: rule.reportCount ?? 0,
 		}
 	})
 
@@ -49,7 +82,11 @@ const RuleTable: React.FC<RuleTableProps> = ({ rules }: RuleTableProps) => {
 			headerName: "",
 			renderCell: (params) => (
 				<IconButton onClick={() => displayDetailedRule(params.row.id)}>
-					<InfoTwoToneIcon />
+					<InfoTwoTone
+						style={{
+							color: "#ddd9d9",
+						}}
+					/>
 				</IconButton>
 			),
 			width: 50,
@@ -58,65 +95,60 @@ const RuleTable: React.FC<RuleTableProps> = ({ rules }: RuleTableProps) => {
 			resizable: false,
 			disableColumnMenu: true,
 			align: "left",
+			headerClassName: styles.p,
 		},
 		{
 			field: "col1",
 			headerName: "ID",
 			cellClassName: styles.pmono,
+			headerClassName: styles.p,
 		},
 		{
 			field: "col2",
 			headerName: "Short description",
-			width: 144,
+			// width: 144,
+			width: 288,
 			cellClassName: styles.p,
-		},
-		{
-			field: "col3",
-			headerName: "Broken rule",
-			width: 120,
-			cellClassName: styles.pmono,
-		},
-		{
-			field: "col4",
-			headerName: "Community ID",
-			width: 128,
-			cellClassName: styles.pmono,
-		},
-		{
-			field: "col5",
-			headerName: "Admin ID",
-			width: 196,
-			cellClassName: styles.pmono,
+			headerClassName: styles.p,
 		},
 	]
+	if (showReportCount)
+		columns.push({
+			field: "col3",
+			headerName: "Report count",
+			width: 128,
+			cellClassName: styles.p,
+			headerClassName: styles.p,
+		})
 
 	const DetailedReportDialog = (
 		<Dialog open={detailedOpened} onClose={() => setDetailedOpened(false)}>
-			<DialogTitle>Rule ID {detailedRule?.id}</DialogTitle>
 			<DialogContent>
-				<DialogContentText>ID: {detailedRule?.id}</DialogContentText>
-				<DialogContentText>
-					Rule short description: {detailedRule?.shortdesc}
-				</DialogContentText>
-				<DialogContentText>
-					Broken Rule long description: {detailedRule?.longdesc}
-				</DialogContentText>
+				{detailedRule && <RuleComponent id={detailedRule.id} />}
 			</DialogContent>
 		</Dialog>
 	)
 	return (
-		<>
+		<div
+			style={{
+				height: 384,
+				width: 768,
+			}}
+		>
 			<DataGrid
 				rows={rows}
 				columns={columns}
-				classes={{
-					// TODO: fix footer colors to not let them be white
-					rowCount: styles.columnHeader,
+				components={{
+					Pagination: CustomPagination,
 				}}
-				onRowDoubleClick={displayDetailedRule}
+				classes={{
+					selectedRowCount: styles.p,
+					rowCount: styles.p,
+				}}
+				pageSize={10}
 			/>
 			{DetailedReportDialog}
-		</>
+		</div>
 	)
 }
 export default RuleTable
