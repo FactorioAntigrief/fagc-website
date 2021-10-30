@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react"
 import { Paper, Input, Divider, Typography } from "@mui/material"
 import CommunityProfile from "../../Components/Profile/communityprofile"
-import { useDebounce } from "react-use"
+import { useDebounce, useEffectOnce } from "react-use"
 import { useStyles } from "../../Other/themes/styles"
 import useFetchCommunity from "../../Components/Hooks/fetchCommunity"
 import useFetchCommunityProfile from "../../Components/Hooks/fetchProfile"
 import { Rule, Report } from "fagc-api-types"
 import ReportTable from "../../Components/Tables/ReportTable"
 import RuleTable from "../../Components/Tables/RuleTable"
-import { useFetchRulesId } from "../../Components/Hooks/fetchRule"
+import {
+	useFetchAllRules,
+	useFetchRulesId,
+} from "../../Components/Hooks/fetchRule"
 
 const CommunityProfilePage = (): JSX.Element => {
 	const classes = useStyles()
@@ -17,7 +20,7 @@ const CommunityProfilePage = (): JSX.Element => {
 	const [{ loading: profileLoading, profiles }, setProfileData] =
 		useFetchCommunityProfile()
 
-	const [{ rules: rawRules }, setRuleIDs] = useFetchRulesId()
+	const [{ rules: allRules }, fetchAllRules] = useFetchAllRules()
 	const [playername, setPlayername] = useState<string | undefined>(undefined)
 	const [reports, setReports] = useState<Report[]>([])
 	const [rawPlayername, setRawPlayername] = useState<string | undefined>(
@@ -32,10 +35,14 @@ const CommunityProfilePage = (): JSX.Element => {
 		})[]
 	>([])
 
+	useEffectOnce(() => {
+		fetchAllRules()
+	})
+
 	useEffect(() => {
 		const reports = profiles.map((profile) => profile.reports).flat()
 		setReports(reports)
-		setRuleIDs(
+		console.log(
 			Array.from(new Set(reports.map((report) => report.brokenRule)))
 		)
 	}, [profiles])
@@ -43,7 +50,7 @@ const CommunityProfilePage = (): JSX.Element => {
 	useEffect(() => {
 		const rules: (Rule & {
 			reportCount: number
-		})[] = rawRules.map((rule) => {
+		})[] = allRules.map((rule) => {
 			return {
 				...rule,
 				reportCount: 0,
@@ -53,8 +60,8 @@ const CommunityProfilePage = (): JSX.Element => {
 			const rule = rules.find((rule) => rule.id === report.brokenRule)
 			if (rule) rule.reportCount++
 		})
-		setRules(rules)
-	}, [rawRules])
+		setRules(rules.filter((rule) => rule.reportCount > 0))
+	}, [allRules, reports])
 
 	useDebounce(
 		() => {
@@ -78,7 +85,12 @@ const CommunityProfilePage = (): JSX.Element => {
 	return (
 		<Paper
 			elevation={1}
-			style={{ alignContent: "center", margin: 32, padding: 16 }}
+			style={{
+				alignContent: "center",
+				margin: 32,
+				padding: 16,
+				width: 768 + 32,
+			}}
 		>
 			<div
 				style={{

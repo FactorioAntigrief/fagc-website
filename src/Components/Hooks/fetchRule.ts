@@ -43,7 +43,7 @@ export const useFetchRuleId = (): [
 /**
  * Returns some data and a function with which a fetch can be called
  */
-export const useAllFetchRules = (): [
+export const useFetchAllRules = (): [
 	{ loading: boolean; rules: Rule[]; error: Error | null },
 	() => void
 ] => {

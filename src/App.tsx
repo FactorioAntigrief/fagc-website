@@ -7,11 +7,18 @@ import CommunityProfile from "./Pages/CommunityProfile/CommunityProfile"
 
 function App(): JSX.Element {
 	return (
-		<div className="App">
-			<Grid container direction="column" alignItems="center">
-				{/* <ReportComponent id={"PmwQAVC"} /> */}
-				<CommunityProfile />
-			</Grid>
+		<div
+			className="App"
+			style={{
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+			}}
+		>
+			{/* <Grid container direction="column" alignItems="center"> */}
+			{/* <ReportComponent id={"PmwQAVC"} /> */}
+			<CommunityProfile />
+			{/* </Grid> */}
 		</div>
 	)
 }
