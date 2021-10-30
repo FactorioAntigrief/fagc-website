@@ -32,7 +32,7 @@ const CustomPagination = () => {
 					// backgroundColor: "tomato",
 				},
 				"& .MuiButtonBase-root": {
-					backgroundColor: "#24242494",
+					backgroundColor: "#223f4cc9",
 				},
 			}}
 			// color={"primary"}

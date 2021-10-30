@@ -6,28 +6,27 @@ import useFetchCommunityProfile from "../Hooks/fetchProfile"
 import useFetchCommunity from "../Hooks/fetchCommunity"
 
 interface CommunityProfileProps {
-	playername: string
-	communityId: string
+	playername?: string
+	communityId?: string
 }
 
 const CommunityProfile: React.FC<CommunityProfileProps> = ({
 	playername,
 	communityId,
 }: CommunityProfileProps) => {
-	const [{ loading: profileLoading, profile }, setProfileData] =
+	const [{ loading: profileLoading, profile: profiles }, setProfileData] =
 		useFetchCommunityProfile()
 	const [{ loading: communityLoading, community }, setCommunity] =
 		useFetchCommunity()
 	const styles = useStyles()
 
 	useEffect(() => {
-		setProfileData(playername, communityId)
-		setCommunity(communityId)
+		if (playername) setProfileData(playername, communityId)
+		if (communityId) setCommunity(communityId)
 	}, [playername, communityId])
 
-	const skeleton = (width?: string | number) => (
-		<Skeleton style={{ display: "inline-block" }} width={width ?? "4em"} />
-	)
+	const reports = profiles.map((profile) => profile.reports).flat()
+
 	return (
 		<Grid item xs="auto">
 			<Paper
@@ -37,19 +36,37 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 					alignItems: "center",
 					alignContent: "center",
 				}}
-				elevation={1}
+				elevation={2}
 			>
-				<Typography variant="h2" className={styles.p}>
-					Playername: {playername}
-				</Typography>
-				<Typography variant="h3" className={styles.p}>
-					Community:{" "}
-					{communityLoading || !community ? (
-						<Skeleton width={"12rem"} />
-					) : (
-						community.name
-					)}
-				</Typography>
+				{playername ? (
+					<Typography variant="h2" className={styles.p}>
+						Playername: {playername}
+					</Typography>
+				) : (
+					<Typography variant="h2" className={styles.p}>
+						No playername provided
+					</Typography>
+				)}
+				{/* this depends on communityId because it isnt there if there are multiple communities */}
+				{communityId ? (
+					<Typography variant="h3" className={styles.p}>
+						Community:{" "}
+						{communityLoading ? (
+							<Skeleton
+								style={{ display: "inline" }}
+								width={"12rem"}
+							/>
+						) : community ? (
+							community.name
+						) : (
+							"Not found"
+						)}
+					</Typography>
+				) : (
+					<Typography variant="h3" className={styles.p}>
+						No community specified
+					</Typography>
+				)}
 
 				<div
 					style={{
@@ -59,18 +76,10 @@ const CommunityProfile: React.FC<CommunityProfileProps> = ({
 						marginRight: "auto",
 					}}
 				>
-					<ReportTable reports={profile ? profile.reports : []} />
+					<ReportTable reports={reports} />
 				</div>
 			</Paper>
 		</Grid>
 	)
-	// }
-	// if (profileLoading)
-	// 	return (
-	// 		<Grid item xs="auto">
-	// 			<p>Loading...</p>
-	// 		</Grid>
-	// 	)
-	// return <div>An error occured</div>
 }
 export default CommunityProfile
