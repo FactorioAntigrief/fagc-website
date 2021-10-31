@@ -2,6 +2,16 @@
 	"name": "fagc-website",
 	"version": "0.1.0",
 	"private": true,
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"lint": "npm run eslint && npm run prettier",
+		"eslint": "eslint src/ --fix",
+		"prettier": "prettier --write .",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d build"
+	},
 	"dependencies": {
 		"@emotion/react": "^11.4.1",
 		"@emotion/styled": "^11.3.0",
@@ -26,17 +36,6 @@
 		"typescript": "^4.4.3",
 		"web-vitals": "^1.1.2"
 	},
-	"scripts": {
-		"start": "react-scripts start",
-		"build": "react-scripts build",
-		"test": "react-scripts test",
-		"eject": "react-scripts eject",
-		"lint": "npm run eslint && npm run prettier",
-		"eslint": "eslint src/ --fix",
-		"prettier": "prettier --write .",
-		"predeploy": "npm run build",
-		"deploy": "gh-pages -d build"
-	},
 	"eslintConfig": {
 		"extends": [
 			"react-app"
@@ -53,5 +52,9 @@
 			"last 1 firefox version",
 			"last 1 safari version"
 		]
+	},
+	"devDependencies": {
+		"@vitejs/plugin-react": "^1.0.7",
+		"vite": "^2.6.13"
 	}
 }
