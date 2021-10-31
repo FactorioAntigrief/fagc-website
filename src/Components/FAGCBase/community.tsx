@@ -2,36 +2,37 @@ import { Report } from "fagc-api-types"
 import React, { useEffect, useState } from "react"
 import { Grid, Paper, Skeleton } from "@mui/material/"
 import { FAGC } from "../../FAGC"
-import useFetchReport from "../Hooks/fetchReport"
 import { useFetchCommunity } from "../Hooks/fetchCommunity"
 import { useFetchRuleId } from "../Hooks/fetchRule"
 import { useStyles } from "../../Other/themes/styles"
 
-interface RuleProps {
+interface CommunityProps {
 	id: string
 }
 
-const RuleComponent: React.FC<RuleProps> = ({ id }) => {
+const CommunityComponent: React.FC<CommunityProps> = ({ id }) => {
 	const classes = useStyles()
-	const [{ rule, loading: ruleLoading }, setRule] = useFetchRuleId()
+	const [{ community, loading: communityLoading }, setCommunity] =
+		useFetchCommunity()
+
 	useEffect(() => {
-		setRule(id)
+		setCommunity(id)
 	}, [id])
 
 	const skeleton = (width: string) => <Skeleton width={width} />
 
 	return (
 		<>
-			<p className={classes.p}>Rule ID: {id}</p>
+			<p className={classes.p}>Community ID: {id}</p>
 			<p className={classes.p}>
-				Rule short description:{" "}
-				{ruleLoading ? skeleton("6em") : rule?.shortdesc}
+				Community name:{" "}
+				{communityLoading ? skeleton("6em") : community?.name}
 			</p>
 			<p className={classes.p}>
-				Rule long description:{" "}
-				{ruleLoading ? skeleton("6em") : rule?.longdesc}
+				Community contact:{" "}
+				{communityLoading ? skeleton("6em") : community?.contact}
 			</p>
 		</>
 	)
 }
-export default RuleComponent
+export default CommunityComponent

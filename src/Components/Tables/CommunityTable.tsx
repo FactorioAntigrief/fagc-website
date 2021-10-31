@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Report } from "fagc-api-types"
+import { Community } from "fagc-api-types"
 import {
 	DataGrid,
 	GridColDef,
@@ -10,11 +10,17 @@ import {
 import { Dialog, DialogContent, IconButton, Pagination } from "@mui/material"
 import { InfoTwoTone } from "@mui/icons-material"
 import { useStyles } from "../../Other/themes/styles"
+import { useFetchCommunity } from "../Hooks/fetchCommunity"
+import { useFetchRuleId } from "../Hooks/fetchRule"
 import ReportComponent from "../FAGCBase/report"
 import { themeDark } from "../../Other/themes/themeDark"
+import CommunityComponent from "../FAGCBase/community"
 
-interface ReportTableProps {
-	reports: Report[]
+interface CommunityTableProps {
+	communities: (Community & {
+		reportCount?: number
+	})[]
+	showReportCount?: boolean
 }
 
 const CustomPagination = () => {
@@ -43,29 +49,31 @@ const CustomPagination = () => {
 	)
 }
 
-const ReportTable: React.FC<ReportTableProps> = ({
-	reports,
-}: ReportTableProps) => {
+const CommunityTable: React.FC<CommunityTableProps> = ({
+	communities,
+	showReportCount,
+}) => {
 	const [detailedOpened, setDetailedOpened] = useState(false)
-	const [report, setReport] = useState<Report | null>(null)
+	const [community, setCommunity] = useState<Community | null>(null)
+
 	const styles = useStyles()
 
-	const displayDetailedReport = (id: string) => {
-		const report = reports.find((report) => report.id === id)
-		if (!report) return
-		setReport(report)
+	const displayDetailedCommunity = (id: string) => {
+		const community = communities.find((community) => community.id === id)
+		console.log(community)
+		if (!community) return
+		setCommunity(community)
 		setDetailedOpened(true)
 	}
 
-	const rows: GridRowModel[] = reports.map((report) => {
+	const rows: GridRowModel[] = communities.map((community) => {
 		return {
-			id: report.id,
-			col1: report.id,
+			id: community.id,
+			col1: community.id,
 			infoButton: "info button",
-			col2: report.playername,
-			col3: report.brokenRule,
-			col4: report.communityId,
-			col5: report.adminId,
+			col2: community.name,
+			col3: community.contact,
+			col4: community.reportCount ?? 0,
 		}
 	})
 	const columns: GridColDef[] = [
@@ -74,7 +82,7 @@ const ReportTable: React.FC<ReportTableProps> = ({
 			headerName: "",
 			renderCell: (params) => (
 				<IconButton
-					onClick={() => displayDetailedReport(params.row.id)}
+					onClick={() => displayDetailedCommunity(params.row.id)}
 				>
 					<InfoTwoTone
 						style={{
@@ -99,38 +107,32 @@ const ReportTable: React.FC<ReportTableProps> = ({
 		},
 		{
 			field: "col2",
-			headerName: "Playername",
-			width: 144,
+			headerName: "Name",
+			width: 288,
 			cellClassName: styles.p,
 			headerClassName: styles.p,
 		},
 		{
 			field: "col3",
-			headerName: "Broken rule",
-			width: 120,
-			cellClassName: styles.pmono,
-			headerClassName: styles.p,
-		},
-		{
-			field: "col4",
-			headerName: "Community ID",
-			width: 128,
-			cellClassName: styles.pmono,
-			headerClassName: styles.p,
-		},
-		{
-			field: "col5",
-			headerName: "Admin ID",
-			width: 196,
+			headerName: "Contact",
+			width: 198,
 			cellClassName: styles.pmono,
 			headerClassName: styles.p,
 		},
 	]
+	if (showReportCount)
+		columns.push({
+			field: "col4",
+			headerName: "Report count",
+			width: 128,
+			cellClassName: styles.p,
+			headerClassName: styles.p,
+		})
 
-	const DetailedReportDialog = (
+	const DetailedCommunityDialog = (
 		<Dialog open={detailedOpened} onClose={() => setDetailedOpened(false)}>
 			<DialogContent>
-				{report && <ReportComponent id={report.id} />}
+				{community && <CommunityComponent id={community.id} />}
 			</DialogContent>
 		</Dialog>
 	)
@@ -154,8 +156,8 @@ const ReportTable: React.FC<ReportTableProps> = ({
 				}}
 				pageSize={10}
 			/>
-			{DetailedReportDialog}
+			{DetailedCommunityDialog}
 		</div>
 	)
 }
-export default ReportTable
+export default CommunityTable

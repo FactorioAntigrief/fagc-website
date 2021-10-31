@@ -1,53 +1,46 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Paper, Input, Divider, Typography } from "@mui/material"
 import CommunityProfile from "../../Components/Profile/communityprofile"
 import { useDebounce, useEffectOnce } from "react-use"
 import { useStyles } from "../../Other/themes/styles"
-import useFetchCommunity from "../../Components/Hooks/fetchCommunity"
+import {
+	useFetchCommunitiesIDs,
+	useFetchCommunity,
+} from "../../Components/Hooks/fetchCommunity"
 import useFetchCommunityProfile from "../../Components/Hooks/fetchProfile"
-import { Rule, Report } from "fagc-api-types"
+import { Rule, Report, Community } from "fagc-api-types"
 import ReportTable from "../../Components/Tables/ReportTable"
 import RuleTable from "../../Components/Tables/RuleTable"
-import {
-	useFetchAllRules,
-	useFetchRulesId,
-} from "../../Components/Hooks/fetchRule"
+import { useFetchAllRules } from "../../Components/Hooks/fetchRule"
+import CommunityTable from "../../Components/Tables/CommunityTable"
 
 const CommunityProfilePage = (): JSX.Element => {
 	const classes = useStyles()
-	const [{ loading: communityLoading, community }, setCommunity] =
-		useFetchCommunity()
-	const [{ loading: profileLoading, profiles }, setProfileData] =
-		useFetchCommunityProfile()
+	const [{ community }, setCommunity] = useFetchCommunity()
+	const [{ communities: rawCommunities }, setCommunities] =
+		useFetchCommunitiesIDs()
+	const [{ profiles }, setProfileData] = useFetchCommunityProfile()
 
 	const [{ rules: allRules }, fetchAllRules] = useFetchAllRules()
 	const [playername, setPlayername] = useState<string | undefined>(undefined)
-	const [reports, setReports] = useState<Report[]>([])
 	const [rawPlayername, setRawPlayername] = useState<string | undefined>(
 		undefined
 	)
 	const [rawCommunityId, setRawCommunityId] = useState<string | undefined>(
 		undefined
 	)
-	const [rules, setRules] = useState<
-		(Rule & {
-			reportCount?: number
-		})[]
-	>([])
 
 	useEffectOnce(() => {
 		fetchAllRules()
 	})
 
-	useEffect(() => {
-		const reports = profiles.map((profile) => profile.reports).flat()
-		setReports(reports)
-		console.log(
-			Array.from(new Set(reports.map((report) => report.brokenRule)))
-		)
-	}, [profiles])
+	const reports = useMemo(
+		() => profiles.map((profile) => profile.reports).flat(),
+		[profiles]
+	)
+
 	// get the report counts for the rules
-	useEffect(() => {
+	const rules = useMemo(() => {
 		const rules: (Rule & {
 			reportCount: number
 		})[] = allRules.map((rule) => {
@@ -60,12 +53,37 @@ const CommunityProfilePage = (): JSX.Element => {
 			const rule = rules.find((rule) => rule.id === report.brokenRule)
 			if (rule) rule.reportCount++
 		})
-		setRules(rules.filter((rule) => rule.reportCount > 0))
+		return rules.filter((rule) => rule.reportCount > 0)
 	}, [allRules, reports])
+
+	useEffect(() => {
+		const communityIDs = profiles.map((profile) => profile.communityId)
+		setCommunities(communityIDs)
+	}, [profiles])
+
+	// get report counts for communities
+	const communities = useMemo(() => {
+		const communities: (Community & {
+			reportCount: number
+		})[] = rawCommunities.map((community) => {
+			return {
+				...community,
+				reportCount: 0,
+			}
+		})
+		reports.forEach((report) => {
+			const community = communities.find(
+				(community) => community.id === report.communityId
+			)
+			if (community) community.reportCount++
+		})
+		return communities.filter((community) => community.reportCount > 0)
+	}, [rawCommunities, reports])
 
 	useDebounce(
 		() => {
 			if (rawPlayername !== undefined) setPlayername(rawPlayername)
+			console.log(rawPlayername !== undefined)
 		},
 		500,
 		[rawPlayername]
@@ -78,7 +96,6 @@ const CommunityProfilePage = (): JSX.Element => {
 		[rawCommunityId]
 	)
 	useEffect(() => {
-		if (!playername) return
 		setProfileData(playername, community ? community.id : undefined)
 	}, [playername, community])
 
@@ -128,6 +145,11 @@ const CommunityProfilePage = (): JSX.Element => {
 				Broken Rules
 			</Typography>
 			<RuleTable rules={rules} showReportCount />
+			<Divider />
+			<Typography variant="h4" className={classes.h4}>
+				Communities
+			</Typography>
+			<CommunityTable communities={communities} showReportCount />
 		</Paper>
 	)
 }
