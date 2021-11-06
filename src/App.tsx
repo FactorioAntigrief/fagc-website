@@ -6,6 +6,7 @@ import CommunityProfilePage from "./Pages/CommunityProfile/CommunityProfile"
 import { useEffectOnce } from "react-use"
 import { useLogin } from "./Components/Hooks/User"
 import { setUser } from "./redux/user"
+import { useAppSelector } from "./redux/store"
 
 const getCookie = (name: string) => {
 	const value = `; ${document.cookie}`
@@ -15,9 +16,10 @@ const getCookie = (name: string) => {
 
 export default function App(): JSX.Element {
 	const [{ user: fetchedUser }, fetchUser] = useLogin()
+	const user = useAppSelector((data) => data.user)
 
 	useEffectOnce(() => {
-		if (getCookie("qid")) fetchUser()
+		if (getCookie("qid") && !user.user) fetchUser()
 	})
 	useEffect(() => {
 		if (fetchedUser) setUser({ user: fetchedUser })

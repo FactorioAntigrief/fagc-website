@@ -1,11 +1,13 @@
 import { Report } from "fagc-api-types"
 import React, { useEffect, useState } from "react"
-import { Grid, Paper, Skeleton } from "@mui/material/"
+import { Grid, IconButton, Paper, Skeleton } from "@mui/material/"
+import { DeleteTwoTone } from "@mui/icons-material"
 import { FAGC } from "../../FAGC"
 import useFetchReport from "../Hooks/fetchReport"
 import { useFetchCommunity } from "../Hooks/fetchCommunity"
 import { useFetchRuleId } from "../Hooks/fetchRule"
 import { useStyles } from "../../Other/themes/styles"
+import { useAppSelector } from "../../redux/store"
 
 interface ReportProps {
 	id: string
@@ -26,6 +28,17 @@ const ReportComponent: React.FC<ReportProps> = ({ id }: ReportProps) => {
 	useEffect(() => {
 		setReport(id)
 	}, [id])
+
+	const user = useAppSelector((data) => data.user)
+
+	console.log(user.user?.apiAccess)
+
+	const userHasWriteAccess =
+		(user.user &&
+			user.user.apiAccess.find(
+				(guild) => guild.communityId === report?.communityId
+			)) ||
+		false
 
 	const skeleton = (width: string) => <Skeleton width={width} />
 
@@ -58,6 +71,14 @@ const ReportComponent: React.FC<ReportProps> = ({ id }: ReportProps) => {
 			<p className={classes.p}>
 				Proof: {reportLoading ? skeleton("4em") : report?.proof}
 			</p>
+			<IconButton
+				style={{
+					float: "right",
+				}}
+				disabled={!userHasWriteAccess}
+			>
+				<DeleteTwoTone />
+			</IconButton>
 		</>
 	)
 }

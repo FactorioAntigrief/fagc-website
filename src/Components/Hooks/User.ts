@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { User } from "fagc-api-types"
 import { FAGC } from "../../FAGC"
 import { useEffectOnce } from "react-use"
+import { useSnackbar } from "notistack"
 
 /**
  * Attempts to log in a user from cookies in cache
@@ -74,6 +75,7 @@ export const useSignup = (): [
 	{ loading: boolean; user: User | null; error: Error | null },
 	(code: string, state: string) => void
 ] => {
+	const { enqueueSnackbar } = useSnackbar()
 	const [user, setUser] = useState<User | null>(null)
 	const [error, setError] = useState<Error | null>(null)
 	const [loading, setLoading] = useState(false)
@@ -88,6 +90,11 @@ export const useSignup = (): [
 			try {
 				const user = await FAGC.users.signup(code, state)
 				setUser(user)
+				if (user?.discordUserTag)
+					enqueueSnackbar(
+						`You have been logged in as ${user.discordUserTag}`
+					)
+				else enqueueSnackbar("You have been logged out")
 				setLoading(false)
 			} catch (error) {
 				setError(error as Error)
@@ -104,4 +111,33 @@ export const useSignup = (): [
 			setCode(code), setState(state)
 		},
 	]
+}
+
+export const useLogout = (): [
+	{ loading: boolean; error: Error | null },
+	() => void
+] => {
+	const [error, setError] = useState<Error | null>(null)
+	const [loading, setLoading] = useState(false)
+	const [shouldFetch, setShouldFetch] = useState(false)
+
+	useEffect(() => {
+		const logout = async () => {
+			setLoading(true)
+			setError(null)
+			try {
+				console.log("logging out")
+				await FAGC.users.logout()
+				setLoading(false)
+			} catch (error) {
+				console.error(error)
+				setError(error as Error)
+				setLoading(false)
+			}
+			return
+		}
+		logout()
+	}, [shouldFetch])
+
+	return [{ loading, error }, () => setShouldFetch(!shouldFetch)]
 }

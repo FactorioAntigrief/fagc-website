@@ -1,11 +1,10 @@
 import React, { useEffect } from "react"
 import { useHistory } from "react-router"
 import { AppBar, Toolbar, Link, Button, IconButton } from "@mui/material"
-import { useSnackbar } from "notistack"
 import { useEffectOnce } from "react-use"
 import { useAppDispatch, useAppSelector } from "../../redux/store"
 import { setUser } from "../../redux/user"
-import { useFetchSignupURL, useSignup } from "../Hooks/User"
+import { useFetchSignupURL, useLogout, useSignup } from "../Hooks/User"
 
 interface NavbarProps {
 	pages: Map<string, string>
@@ -16,17 +15,20 @@ const Navbar = ({ pages, currentPage }: NavbarProps): JSX.Element => {
 	const history = useHistory()
 	const [{ url }] = useFetchSignupURL()
 	const [{ user: fetchedUser }, signupOrLogin] = useSignup()
-	const { enqueueSnackbar } = useSnackbar()
+	const [, logoutUser] = useLogout()
 
 	const user = useAppSelector((data) => data.user)
 	const dispatch = useAppDispatch()
-	const logout = () => {}
+	// TODO: implement logout on API, wrapper and here
+	const logout = () => {
+		logoutUser()
+		dispatch(setUser({ user: null }))
+	}
 
 	useEffectOnce(() => {
 		const params = new URL(window.location.href)
 		const code = params.searchParams.get("code")
 		const state = params.searchParams.get("state")
-		console.log(code, state)
 		if (
 			code &&
 			typeof code === "string" &&
@@ -36,12 +38,6 @@ const Navbar = ({ pages, currentPage }: NavbarProps): JSX.Element => {
 			signupOrLogin(code, state)
 		}
 	})
-	useEffect(() => {
-		// TODO: make these appear only if the user has finished with the logging in/out process and not when the page refreshes
-		if (user.discordUserTag)
-			enqueueSnackbar(`You have been logged in as ${user.discordUserTag}`)
-		else enqueueSnackbar("You have been logged out")
-	}, [user])
 	useEffect(() => {
 		if (fetchedUser) {
 			dispatch(setUser({ user: fetchedUser }))
