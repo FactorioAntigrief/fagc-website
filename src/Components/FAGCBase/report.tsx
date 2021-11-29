@@ -1,13 +1,12 @@
-import { Report } from "fagc-api-types"
-import React, { useEffect, useState } from "react"
-import { Grid, IconButton, Paper, Skeleton } from "@mui/material/"
+import React, { useEffect } from "react"
+import { IconButton, Tooltip, Skeleton } from "@mui/material/"
 import { DeleteTwoTone } from "@mui/icons-material"
-import { FAGC } from "../../FAGC"
-import useFetchReport from "../Hooks/fetchReport"
+import { useFetchReport, useRevokeReport } from "../Hooks/Report"
 import { useFetchCommunity } from "../Hooks/fetchCommunity"
 import { useFetchRuleId } from "../Hooks/fetchRule"
 import { useStyles } from "../../Other/themes/styles"
 import { useAppSelector } from "../../redux/store"
+import { useSnackbar } from "notistack"
 
 interface ReportProps {
 	id: string
@@ -19,6 +18,13 @@ const ReportComponent: React.FC<ReportProps> = ({ id }: ReportProps) => {
 	const [{ community, loading: communityLoading }, setCommunity] =
 		useFetchCommunity()
 	const [{ rule, loading: ruleLoading }, setRule] = useFetchRuleId()
+	const [
+		{ loading: revocationLoading, revocation, error: revocationError },
+		revokeReport,
+	] = useRevokeReport()
+	const { enqueueSnackbar } = useSnackbar()
+
+	console.log(revocation, revocationError)
 
 	useEffect(() => {
 		if (!report) return
@@ -31,17 +37,28 @@ const ReportComponent: React.FC<ReportProps> = ({ id }: ReportProps) => {
 
 	const user = useAppSelector((data) => data.user)
 
-	console.log(user.user?.apiAccess)
-
 	const userHasWriteAccess =
 		(user.user &&
 			user.user.apiAccess.find(
-				(guild) => guild.communityId === report?.communityId
+				(guild) =>
+					guild.communityId === report?.communityId && guild.reports
 			)) ||
 		false
-
+	const revoke = () => {
+		if (user.discordUserId && userHasWriteAccess) {
+			revokeReport(id, user.discordUserId)
+		} else {
+			enqueueSnackbar("You do not have access to revoke this report", {
+				variant: "error",
+			})
+		}
+	}
 	const skeleton = (width: string) => <Skeleton width={width} />
-
+	console.log(
+		userHasWriteAccess
+			? "Revoke report"
+			: "Insuffcient permissions for report revocation"
+	)
 	return (
 		<>
 			<p className={classes.p}>Report ID: {id}</p>
@@ -71,14 +88,23 @@ const ReportComponent: React.FC<ReportProps> = ({ id }: ReportProps) => {
 			<p className={classes.p}>
 				Proof: {reportLoading ? skeleton("4em") : report?.proof}
 			</p>
-			<IconButton
-				style={{
-					float: "right",
-				}}
-				disabled={!userHasWriteAccess}
+			<Tooltip
+				title={
+					userHasWriteAccess
+						? "Revoke report"
+						: "Insuffcient permissions for report revocation"
+				}
 			>
-				<DeleteTwoTone />
-			</IconButton>
+				<span
+					style={{
+						float: "right",
+					}}
+				>
+					<IconButton disabled={!userHasWriteAccess} onClick={revoke}>
+						<DeleteTwoTone />
+					</IconButton>
+				</span>
+			</Tooltip>
 		</>
 	)
 }

@@ -1,9 +1,6 @@
 import { Report } from "fagc-api-types"
-import React, { useEffect, useState } from "react"
-import { Grid, Paper, Skeleton } from "@mui/material/"
-import { FAGC } from "../../FAGC"
-import useFetchReport from "../Hooks/fetchReport"
-import { useFetchCommunity } from "../Hooks/fetchCommunity"
+import React, { useEffect } from "react"
+import { Skeleton } from "@mui/material/"
 import { useFetchRuleId } from "../Hooks/fetchRule"
 import { useStyles } from "../../Other/themes/styles"
 

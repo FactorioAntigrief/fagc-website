@@ -92,9 +92,13 @@ export const useSignup = (): [
 				setUser(user)
 				if (user?.discordUserTag)
 					enqueueSnackbar(
-						`You have been logged in as ${user.discordUserTag}`
+						`You have been logged in as ${user.discordUserTag}`,
+						{ variant: "success" }
 					)
-				else enqueueSnackbar("You have been logged out")
+				else
+					enqueueSnackbar("You have been logged out", {
+						variant: "success",
+					})
 				setLoading(false)
 			} catch (error) {
 				setError(error as Error)
