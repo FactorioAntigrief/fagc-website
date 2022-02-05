@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+# This project is currently deprecated and hasn't been worked on for a while. Please see the [new repo](https://github.com/FactorioAntigrief/FactorioAntigrief) for any updates.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
