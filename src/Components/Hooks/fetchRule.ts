@@ -75,12 +75,12 @@ export const useFetchAllRules = (): [
 
 export const useFetchRulesId = (): [
 	{ loading: boolean; rules: Rule[]; error: Error | null },
-	(ruleIDs: string[]) => void
+	(ruleIds: string[]) => void
 ] => {
 	const [rules, setRules] = useState<Rule[]>([])
 	const [error, setError] = useState<Error | null>(null)
 	const [loading, setLoading] = useState(false)
-	const [ruleIDs, setRuleIDs] = useState<string[]>([])
+	const [ruleIds, setRuleIds] = useState<string[]>([])
 
 	useEffect(() => {
 		const fetchRules = async () => {
@@ -89,7 +89,7 @@ export const useFetchRulesId = (): [
 			setRules([])
 			try {
 				const rules = await Promise.all(
-					ruleIDs.map((id) => FAGC.rules.fetchRule(id))
+					ruleIds.map((id) => FAGC.rules.fetchRule(id))
 				).then((rules) => rules.filter((r) => r !== null) as Rule[])
 				setRules(rules)
 				setLoading(false)
@@ -100,10 +100,10 @@ export const useFetchRulesId = (): [
 			return
 		}
 		fetchRules()
-	}, [ruleIDs])
+	}, [ruleIds])
 
 	return [
 		{ loading, rules, error },
-		(ruleIDs: string[]) => setRuleIDs(ruleIDs),
+		(ruleIds: string[]) => setRuleIds(ruleIds),
 	]
 }

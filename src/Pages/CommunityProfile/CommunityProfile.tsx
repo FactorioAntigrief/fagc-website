@@ -4,7 +4,7 @@ import CommunityProfile from "../../Components/Profile/communityprofile"
 import { useDebounce, useEffectOnce } from "react-use"
 import { useStyles } from "../../Other/themes/styles"
 import {
-	useFetchCommunitiesIDs,
+	useFetchCommunitiesIds,
 	useFetchCommunity,
 } from "../../Components/Hooks/fetchCommunity"
 import useFetchCommunityProfile from "../../Components/Hooks/fetchProfile"
@@ -18,7 +18,7 @@ const CommunityProfilePage = (): JSX.Element => {
 	const classes = useStyles()
 	const [{ community }, setCommunity] = useFetchCommunity()
 	const [{ communities: rawCommunities }, setCommunities] =
-		useFetchCommunitiesIDs()
+		useFetchCommunitiesIds()
 	const [{ profiles }, setProfileData] = useFetchCommunityProfile()
 
 	const [{ rules: allRules }, fetchAllRules] = useFetchAllRules()
@@ -57,8 +57,8 @@ const CommunityProfilePage = (): JSX.Element => {
 	}, [allRules, reports])
 
 	useEffect(() => {
-		const communityIDs = profiles.map((profile) => profile.communityId)
-		setCommunities(communityIDs)
+		const communityIds = profiles.map((profile) => profile.communityId)
+		setCommunities(communityIds)
 	}, [profiles])
 
 	// get report counts for communities

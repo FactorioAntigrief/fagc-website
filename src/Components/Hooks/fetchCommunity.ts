@@ -39,7 +39,7 @@ export const useFetchCommunity = (): [
 	return [{ loading, community, error }, setCommunityId]
 }
 
-export const useFetchCommunitiesIDs = (): [
+export const useFetchCommunitiesIds = (): [
 	{ loading: boolean; communities: Community[]; error: Error | null },
 	(ids: string[]) => void
 ] => {
